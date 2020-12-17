@@ -61,12 +61,12 @@ public class CompareTest {
 	}
 
 	@Test
-	@DisplayName("함수를 통해 정렬")
+	@DisplayName("comparator 통해 정렬")
 	void sort_comparator_implements() {
 		List<Integer> numbers = Arrays.asList(3, 9, -1, 7, 6);
 		List<Integer> expected = Arrays.asList(9, 7, 6, 3, -1);
 
-		numbers.sort(Comparator.comparing(Integer::intValue).reversed());
+		numbers.sort((n1, n2) -> n2 - n1);
 		assertEquals(expected, numbers);
 	}
 
