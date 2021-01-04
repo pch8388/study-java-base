@@ -2,7 +2,7 @@ package me.study.base.compare;
 
 import java.util.Objects;
 
-public class Person {
+public class Person implements Comparable<Person> {
 	private int age;
 	private String name;
 
@@ -32,5 +32,18 @@ public class Person {
 	@Override
 	public int hashCode() {
 		return Objects.hash(age, name);
+	}
+
+	@Override
+	public String toString() {
+		return "Person{" +
+			"age=" + age +
+			", name='" + name + '\'' +
+			'}';
+	}
+
+	@Override
+	public int compareTo(Person o) {
+		return name.compareTo(o.name);
 	}
 }

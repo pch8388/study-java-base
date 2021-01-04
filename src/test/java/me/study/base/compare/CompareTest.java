@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
 import java.util.stream.IntStream;
 
 import org.junit.jupiter.api.DisplayName;
@@ -85,5 +86,31 @@ public class CompareTest {
 
 		people.sort(Comparator.comparing(Person::getAge).thenComparing(Person::getName));
 		assertEquals(expected, people);
+	}
+
+	@Test
+	@DisplayName("PriorityQueue 순서 확인")
+	void priority_queue() {
+		PriorityQueue<Person> people = new PriorityQueue<>(Comparator.comparing(Person::getAge));
+		people.offer(new Person(15, "aaa"));
+		people.offer(new Person(20, "aaa"));
+		people.offer(new Person(11, "aaa"));
+		people.offer(new Person(30, "aaa"));
+		people.offer(new Person(33, "aaa"));
+		people.offer(new Person(3, "aaa"));
+		people.offer(new Person(13, "aaa"));
+		people.offer(new Person(14, "aaa"));
+		people.offer(new Person(15, "aaa"));
+
+		while (!people.isEmpty()) {
+			System.out.println(people);
+			System.out.println(people.poll());
+		}
+	}
+
+
+	@Test
+	void shift_operation() {
+		IntStream.range(0, 11).map(i -> i >>> 1).forEach(System.out::println);
 	}
 }
