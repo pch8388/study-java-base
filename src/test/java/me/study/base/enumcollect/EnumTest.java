@@ -35,7 +35,7 @@ class EnumTest {
 	}
 
 	@Test
-	@DisplayName("")
+	@DisplayName("함수 테스트")
 	void enum_function() {
 		Map<NumberEnum, Function<String, Integer>> enumMap = new EnumMap<>(NumberEnum.class);
 		enumMap.put(NumberEnum.ONE, s -> Integer.parseInt(s) + 1);
