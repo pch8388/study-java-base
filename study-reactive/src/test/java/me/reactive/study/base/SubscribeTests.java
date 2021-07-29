@@ -63,7 +63,7 @@ public class SubscribeTests {
 		System.out.println("=============================");
 
 		Flux.range(1, 10)
-			.buffer(3, 2)
+			.buffer(3, 2)  // 첫번째 파라미터 개수만큼 수집하고, 두번째 파라미터 개수만큼 스킵
 			.subscribe(i -> System.out.println("Received3 : " + i));
 	}
 }
