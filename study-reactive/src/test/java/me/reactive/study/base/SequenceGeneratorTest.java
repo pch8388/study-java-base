@@ -17,4 +17,15 @@ class SequenceGeneratorTest {
 			.expectComplete()
 			.verify();
 	}
+
+	@Test
+	void generator_with_custom_class() {
+		SequenceGenerator sequenceGenerator = new SequenceGenerator();
+		Flux<Integer> fibonacciFlux = sequenceGenerator.generateFibonacciWithCustomClass(10);
+
+		StepVerifier.create(fibonacciFlux)
+			.expectNext(0, 1, 1, 2, 3, 5, 8)
+			.expectComplete()
+			.verify();
+	}
 }

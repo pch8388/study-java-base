@@ -12,4 +12,20 @@ public class SequenceGenerator {
 				return Tuples.of(state.getT2(), state.getT1() + state.getT2());
 			});
 	}
+
+	public Flux<Integer> generateFibonacciWithCustomClass(int limit) {
+		return Flux.generate(
+			() -> new FibonacciState(0, 1),
+			(state, sink) -> {
+				sink.next(state.getFormer());
+				if (state.getLatter() > limit) {
+					sink.complete();
+				}
+
+				int temp = state.getFormer();
+				state.setFormer(state.getLatter());
+				state.setLatter(temp + state.getLatter());
+				return state;
+			});
+	}
 }
