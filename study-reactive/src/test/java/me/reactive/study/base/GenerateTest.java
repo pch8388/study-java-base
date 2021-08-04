@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 import reactor.core.publisher.Flux;
 
-public class SinkTest {
+public class GenerateTest {
 
 	@DisplayName("평범한 사용")
 	@Test
