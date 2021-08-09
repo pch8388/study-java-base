@@ -5,6 +5,7 @@ import java.time.Duration;
 import org.junit.jupiter.api.Test;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 public class SubscribeTests {
 
@@ -65,5 +66,18 @@ public class SubscribeTests {
 		Flux.range(1, 10)
 			.buffer(3, 2)  // 첫번째 파라미터 개수만큼 수집하고, 두번째 파라미터 개수만큼 스킵
 			.subscribe(i -> System.out.println("Received3 : " + i));
+	}
+
+	@Test
+	void thread() throws InterruptedException {
+		System.out.println("main thread " + Thread.currentThread().getName());
+		Mono<String> mono = Mono.just("hello ");
+
+		Thread t = new Thread(() -> mono.map(msg -> msg + "thread ")
+			.subscribe(v ->
+				System.out.println(v + Thread.currentThread().getName())));
+
+		t.start();
+		t.join();
 	}
 }
