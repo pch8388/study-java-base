@@ -1,11 +1,12 @@
 package me.reactive.study.base;
 
-import java.time.Duration;
-
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 
 public class SubscribeTests {
 
@@ -79,5 +80,21 @@ public class SubscribeTests {
 
 		t.start();
 		t.join();
+	}
+
+	@DisplayName("publishOn 쓰레드 체크")
+	@Test
+	void publishOn() throws InterruptedException {
+		Scheduler scheduler = Schedulers.newParallel("parallel-scheduler", 4);
+
+		// publishOn 에서 지정한 스케줄러의 thread 를 사용한다
+		final Flux<String> flux = Flux.range(1, 2)
+			.map(i -> Thread.currentThread().getName() + " " + (10 + i))
+			.publishOn(scheduler)
+			.map(i -> "value " + i + " " + Thread.currentThread().getName());
+
+		final Thread thread = new Thread(() -> flux.subscribe(System.out::println));
+		thread.start();
+		thread.join();
 	}
 }
