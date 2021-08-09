@@ -19,14 +19,34 @@ public class ErrorHandleTest {
 		);
 	}
 
-	private String doSecondTransform(Integer v) {
-		return String.valueOf(v);
+	@DisplayName("static fallback")
+	@Test
+	void static_fallback() {
+		final Flux<String> flux = Flux.range(1, 10)
+			.map(this::doSomethingDangerous)
+			.onErrorReturn("RECOVERED");
+
+		flux.subscribe(value -> System.out.println("RECEIVED " + value));
 	}
 
-	private int doSomethingDangerous(int v) {
+	@DisplayName("static fallback predicate")
+	@Test
+	void static_fallback_predicate() {
+		final Flux<String> flux = Flux.range(1, 10)
+			.map(this::doSomethingDangerous)
+			.onErrorReturn(e -> e.getMessage().equals("doSomethingException"), "RECOVERED");
+
+		flux.subscribe(value -> System.out.println("RECEIVED " + value));
+	}
+
+	private String doSecondTransform(String s) {
+		return s;
+	}
+
+	private String doSomethingDangerous(int v) {
 		if (v == 5) {
-			throw new RuntimeException();
+			throw new RuntimeException("doSomethingException");
 		}
-		return v;
+		return String.valueOf(v);
 	}
 }
