@@ -89,9 +89,27 @@ public class SubscribeTests {
 
 		// publishOn 에서 지정한 스케줄러의 thread 를 사용한다
 		final Flux<String> flux = Flux.range(1, 2)
+			.log()
 			.map(i -> Thread.currentThread().getName() + " " + (10 + i))
 			.publishOn(scheduler)
 			.map(i -> "value " + i + " " + Thread.currentThread().getName());
+
+		final Thread thread = new Thread(() -> flux.subscribe(System.out::println));
+		thread.start();
+		thread.join();
+	}
+
+	@DisplayName("subscribeOn 쓰레드 체크")
+	@Test
+	void subscribeOn() throws InterruptedException {
+		Scheduler scheduler = Schedulers.newParallel("parallel-scheduler", 4);
+
+		// subscribeOn 에서 지정한 스케줄러의 thread 를 전체 체인에서 사용한다
+		final Flux<String> flux = Flux.range(1, 2)
+			.log()
+			.map(i -> 10 + i)
+			.subscribeOn(scheduler)
+			.map(i -> "value " + i);
 
 		final Thread thread = new Thread(() -> flux.subscribe(System.out::println));
 		thread.start();
