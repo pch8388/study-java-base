@@ -1,8 +1,11 @@
 package me.reactive.study.base;
 
+import static org.assertj.core.api.Assertions.*;
+
 import java.io.IOException;
 import java.time.Duration;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.Disposable;
 import reactor.core.Exceptions;
 import reactor.core.publisher.Flux;
+import reactor.util.retry.Retry;
 
 public class ErrorHandleTest {
 
@@ -97,6 +101,30 @@ public class ErrorHandleTest {
 			.subscribe(System.out::println, System.err::println);
 
 		Thread.sleep(2100);
+	}
+
+	@Test
+	void retryWhen() {
+		AtomicInteger errorCount = new AtomicInteger();
+		AtomicInteger transientHelper = new AtomicInteger();
+		Flux<Integer> transientFlux = Flux.<Integer>generate(sink -> {
+			int i = transientHelper.getAndIncrement();
+			if (i == 10) {
+				sink.next(i);
+				sink.complete();
+			}
+			else if (i % 3 == 0) {
+				sink.next(i);
+			}
+			else {
+				sink.error(new IllegalStateException("Transient error at " + i));
+			}
+		})
+			.doOnError(e -> errorCount.incrementAndGet());
+
+		transientFlux.retryWhen(Retry.max(2).transientErrors(true))
+			.blockLast();
+		assertThat(errorCount).hasValue(6);
 	}
 
 	@Test

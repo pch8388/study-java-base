@@ -9,9 +9,8 @@ repositories {
 }
 
 dependencies {
-    implementation platform('io.projectreactor:reactor-bom:Bismuth-RELEASE')
-    implementation 'io.projectreactor:reactor-core'
-    implementation 'io.projectreactor:reactor-test'
+    compile "io.projectreactor:reactor-core:3.4.9"
+    testCompile "io.projectreactor:reactor-test:3.4.9"
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
