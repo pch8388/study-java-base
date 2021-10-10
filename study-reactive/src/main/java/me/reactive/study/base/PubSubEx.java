@@ -1,6 +1,6 @@
 package me.reactive.study.base;
 
-import static me.reactive.study.base.PubSubEx.Logger.*;
+import static me.reactive.study.utils.Logger.*;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -88,13 +88,5 @@ public class PubSubEx {
 		});
 
 		System.out.println("exit");
-	}
-
-	static class Logger {
-		static void log(String message) {
-			final String threadName = Thread.currentThread().getName();
-			final String printMessage = String.format("[ %s ] : %s", threadName, message);
-			System.out.println(printMessage);
-		}
 	}
 }
