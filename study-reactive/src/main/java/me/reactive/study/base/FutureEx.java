@@ -8,22 +8,25 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 
 public class FutureEx {
-	public static void main(String[] args) throws ExecutionException, InterruptedException {
+	public static void main(String[] args) {
 		ExecutorService es = Executors.newCachedThreadPool();
 
 		FutureTask<String> async = new FutureTask<>(() -> {
 			Thread.sleep(2000);
 			log("Async");
 			return "Hello";
-		});
+		}) {
+			@Override
+			protected void done() {
+				try {
+					log(get());
+				} catch (InterruptedException | ExecutionException e) {
+					e.printStackTrace();
+				}
+			}
+		};
 
 		es.execute(async);
-
-		log(async.isDone());
-		log("before get");
-		// 결과를 받기 위해 blocking 된다
-		log(async.get());
-		log(async.isDone());
 		log("exit");
 
 		es.shutdown();
