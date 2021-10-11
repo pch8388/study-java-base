@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 import org.springframework.util.concurrent.ListenableFuture;
 
@@ -34,6 +35,21 @@ public class StudySpringApplication {
 		}
 	}
 
+	@Bean
+	ThreadPoolTaskExecutor tp() {
+		ThreadPoolTaskExecutor te = new ThreadPoolTaskExecutor();
+		// 초기 풀 사이즈
+		te.setCorePoolSize(10);
+		// 쓰레드마다 할당되는 큐에 수용할 수 있는 최대 요청
+		te.setQueueCapacity(200);
+		// 초기 풀사이즈에 있는 큐가 모두 가득 차면 쓰레드수를 최대 수만큼 늘림
+		te.setMaxPoolSize(100);
+		te.setThreadNamePrefix("my-thread");
+		te.initialize();
+
+		return te;
+	}
+
 	public static void main(String[] args) {
 		try (ConfigurableApplicationContext c = SpringApplication.run(StudySpringApplication.class, args)) {
 		}
@@ -47,8 +63,8 @@ public class StudySpringApplication {
 			log.info("run()");
 			ListenableFuture<String> res = myService.hello();
 			res.addCallback(
-				s -> System.out.println("result : " + s),
-				e -> System.out.println("error : " + e.getMessage()));
+				s -> log.info("result : " + s),
+				e -> log.info("error : " + e.getMessage()));
 			log.info("exit");
 		};
 	}
