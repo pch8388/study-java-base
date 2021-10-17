@@ -1,6 +1,5 @@
 package com.example.studyspring.emitter;
 
-import java.io.IOException;
 import java.util.concurrent.Executors;
 
 import org.springframework.web.bind.annotation.GetMapping;
