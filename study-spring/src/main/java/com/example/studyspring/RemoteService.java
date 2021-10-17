@@ -20,7 +20,7 @@ public class RemoteService {
 
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(RemoteService.class);
-		app.setDefaultProperties(Map.of("server.port", "8083", "server.tomcat.threads.max", "1000"));
+		app.setDefaultProperties(Map.of("server.tomcat.threads.max", "1000", "server.port", "8083"));
 		app.run(args);
 	}
 }

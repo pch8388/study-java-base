@@ -48,7 +48,7 @@ public class LoadTest {
 				String res = rt.getForObject(url, String.class, idx);
 
 				sw.stop();
-				log.info("Elapsed : {} -> {} / {}", idx, sw.getTotalTimeSeconds(), res);
+				log.info("Elapsed : {} {} / {}", idx, sw.getTotalTimeSeconds(), res);
 				return null;
 			});
 		}
