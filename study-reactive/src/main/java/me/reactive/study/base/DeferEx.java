@@ -9,7 +9,7 @@ public class DeferEx {
 	public static void main(String[] args) {
 		Flux.range(0, 5)
 			.flatMap(x -> Mono.just(x * 2))
-			.switchIfEmpty(Flux.defer(() -> getJust()))
+			.switchIfEmpty(Flux.defer(DeferEx::getJust))
 			.subscribe(System.out::println);
 
 		Flux.range(0, 5)
