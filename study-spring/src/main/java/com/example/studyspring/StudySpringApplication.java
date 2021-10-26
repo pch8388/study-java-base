@@ -1,5 +1,7 @@
 package com.example.studyspring;
 
+import java.util.function.Consumer;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +25,8 @@ public class StudySpringApplication {
 
 	@RestController
 	public static class MyController {
+		public static final String URL1 = "http://localhost:8083/service?req={req}";
+		public static final String URL2 = "http://localhost:8083/service2?req={req}";
 		AsyncRestTemplate rt = new AsyncRestTemplate();
 
 		@Autowired MyService myService;
@@ -32,26 +36,48 @@ public class StudySpringApplication {
 			// 언젠가 값을 반환해줌
 			DeferredResult<String> dr = new DeferredResult<>();
 
-			ListenableFuture<ResponseEntity<String>> f1 = rt.getForEntity(
-				"http://localhost:8083/service?req={req}", String.class,
-				"hello" + idx);
-
-
-			// 예외를 전파해봤자 정확하게 스프링 핸들러에서 받을지 모름 => 어떤 thread 에서 실행중인지 알 수 없기 때문
-			f1.addCallback(s -> {
-					ListenableFuture<ResponseEntity<String>> f2 = rt.getForEntity(
-						"http://localhost:8083/service2?req={req}", String.class, s.getBody());
-
-					f2.addCallback(s2 -> {
-							ListenableFuture<String> f3 = myService.work(s2.getBody());
-							f3.addCallback(dr::setResult,
-								ex -> dr.setErrorResult(ex.getMessage()));
-						},
-						e -> dr.setErrorResult(e.getMessage()));
-				},
-				e -> dr.setErrorResult(e.getMessage()));
+			Completion
+				.from(rt.getForEntity(URL1, String.class, "hello" + idx))
+				.andAccept(s -> dr.setResult(s.getBody()));
 
 			return dr;
+		}
+	}
+
+	public static class Completion {
+		Completion next;
+		Consumer<ResponseEntity<String>> con;
+
+		public Completion() {}
+
+		public Completion(Consumer<ResponseEntity<String>> con) {
+			this.con = con;
+		}
+
+		public void andAccept(Consumer<ResponseEntity<String>> con) {
+			Completion c = new Completion(con);
+			this.next = c;
+		}
+		public static Completion from(ListenableFuture<ResponseEntity<String>> lf) {
+			Completion c = new Completion();
+			lf.addCallback(s -> {
+				c.complete(s);
+			}, e -> {
+				c.error(e);
+			});
+			return c;
+		}
+
+		private void error(Throwable e) {
+
+		}
+
+		private void complete(ResponseEntity<String> s) {
+			if (next != null) next.run(s);
+		}
+
+		private void run(ResponseEntity<String> value) {
+			if (con != null) con.accept(value);
 		}
 	}
 
