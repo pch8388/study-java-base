@@ -1,6 +1,7 @@
 package com.example.studyspring;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -38,6 +39,7 @@ public class StudySpringApplication {
 
 			Completion
 				.from(rt.getForEntity(URL1, String.class, "hello" + idx))
+				.andApply(s -> rt.getForEntity(URL2, String.class, s.getBody()))
 				.andAccept(s -> dr.setResult(s.getBody()));
 
 			return dr;
@@ -54,17 +56,24 @@ public class StudySpringApplication {
 			this.con = con;
 		}
 
+		Function<ResponseEntity<String>, ListenableFuture<ResponseEntity<String>>> fn;
+		public Completion(Function<ResponseEntity<String>, ListenableFuture<ResponseEntity<String>>> fn) {
+			this.fn = fn;
+		}
+
+		public Completion andApply(Function<ResponseEntity<String>, ListenableFuture<ResponseEntity<String>>> fn) {
+			Completion c = new Completion(fn);
+			this.next = c;
+			return c;
+		}
+
 		public void andAccept(Consumer<ResponseEntity<String>> con) {
 			Completion c = new Completion(con);
 			this.next = c;
 		}
 		public static Completion from(ListenableFuture<ResponseEntity<String>> lf) {
 			Completion c = new Completion();
-			lf.addCallback(s -> {
-				c.complete(s);
-			}, e -> {
-				c.error(e);
-			});
+			lf.addCallback(c::complete, c::error);
 			return c;
 		}
 
@@ -78,6 +87,10 @@ public class StudySpringApplication {
 
 		private void run(ResponseEntity<String> value) {
 			if (con != null) con.accept(value);
+			else if (fn != null) {
+				ListenableFuture<ResponseEntity<String>> lf = fn.apply(value);
+				lf.addCallback(this::complete, this::error);
+			}
 		}
 	}
 
