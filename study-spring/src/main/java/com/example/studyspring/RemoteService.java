@@ -17,6 +17,7 @@ public class RemoteService {
 			// throw new RuntimeException();
 			return req + "/service";
 		}
+
 		@GetMapping("/service2")
 		public String service2(String req) throws InterruptedException {
 			Thread.sleep(2000);
