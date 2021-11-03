@@ -40,9 +40,27 @@ public class StudySpringApplication {
 			Completion
 				.from(rt.getForEntity(URL1, String.class, "hello" + idx))
 				.andApply(s -> rt.getForEntity(URL2, String.class, s.getBody()))
+				.andError(e -> dr.setErrorResult(e.toString()))
 				.andAccept(s -> dr.setResult(s.getBody()));
 
 			return dr;
+		}
+	}
+
+	public static class ErrorCompletion extends Completion {
+		Consumer<Throwable> econ;
+		public ErrorCompletion(Consumer<Throwable> econ) {
+			this.econ = econ;
+		}
+
+		@Override
+		void error(Throwable e) {
+			econ.accept(e);
+		}
+
+		@Override
+		void run(ResponseEntity<String> value) {
+			if (next != null) next.run(value);
 		}
 	}
 
@@ -82,6 +100,12 @@ public class StudySpringApplication {
 			return c;
 		}
 
+		public Completion andError(Consumer<Throwable> econ) {
+			Completion c = new ErrorCompletion(econ);
+			this.next = c;
+			return c;
+		}
+
 		public void andAccept(Consumer<ResponseEntity<String>> con) {
 			Completion c = new AcceptCompletion(con);
 			this.next = c;
@@ -93,7 +117,7 @@ public class StudySpringApplication {
 		}
 
 		void error(Throwable e) {
-
+			if (next != null) next.error(e);
 		}
 
 		void complete(ResponseEntity<String> s) {
