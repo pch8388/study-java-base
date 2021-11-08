@@ -1,5 +1,8 @@
 package com.example.studyspring.future;
 
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.AsyncRestTemplate;
@@ -31,5 +34,25 @@ public class MyController {
 			.andAccept(dr::setResult);
 
 		return dr;
+	}
+
+	@GetMapping("/restCF")
+	public DeferredResult<String> restCF(int idx) {
+		DeferredResult<String> dr = new DeferredResult<>();
+
+		toCF(rt.getForEntity(URL1, String.class, "h" + idx))
+			.thenCompose(s -> toCF(rt.getForEntity(URL2, String.class, s.getBody())))
+			.thenApplyAsync(s -> myService.workCF(s.getBody()))
+			.thenAccept(dr::setResult)
+			.exceptionally(e -> {dr.setErrorResult(e.getMessage()); return (Void) null;});
+
+		return dr;
+	}
+
+
+	<T> CompletableFuture<T> toCF(ListenableFuture<T> lf) {
+		CompletableFuture<T> cf = new CompletableFuture<>();
+		lf.addCallback(cf::complete, cf::completeExceptionally);
+		return cf;
 	}
 }

@@ -12,4 +12,8 @@ public class MyService {
 		return new AsyncResult<>(req + "/asyncwork");
 	}
 
+	public String workCF(String req) {
+		return req + "/asyncwork";
+	}
+
 }
