@@ -1,4 +1,4 @@
-package com.example.studyspring;
+package com.example.studyspring.future;
 
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;

@@ -1,4 +1,4 @@
-package com.example.studyspring;
+package com.example.studyspring.future;
 
 import java.util.Map;
 
@@ -13,14 +13,14 @@ public class RemoteService {
 	public static class MyController {
 		@GetMapping("/service")
 		public String rest(String req) throws InterruptedException {
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 			// throw new RuntimeException();
 			return req + "/service";
 		}
 
 		@GetMapping("/service2")
 		public String service2(String req) throws InterruptedException {
-			Thread.sleep(2000);
+			Thread.sleep(1000);
 			return req + "/service2";
 		}
 	}
