@@ -1,4 +1,4 @@
 rootProject.name = 'study-java-base'
 include 'study-java'
 include 'study-reactive'
-
+include 'study-spring'
