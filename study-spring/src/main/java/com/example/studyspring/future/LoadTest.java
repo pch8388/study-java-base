@@ -23,9 +23,9 @@ public class LoadTest {
 
 		// call("http://localhost:8080/dr");
 
-		// call("http://localhost:8080/rest?idx={idx}");
+		call("http://localhost:8080/rest?idx={idx}");
 
-		call("http://localhost:8080/restCF?idx={idx}");
+		// call("http://localhost:8080/restCF?idx={idx}");
 	}
 
 	private static void call(String url) throws InterruptedException, BrokenBarrierException {
