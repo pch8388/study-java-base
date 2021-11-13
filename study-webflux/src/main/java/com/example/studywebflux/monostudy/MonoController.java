@@ -39,13 +39,10 @@ public class MonoController {
 	// text/event-stream : 데이터를 stream 형태로 나눠서 보냄
 	@GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<Event> events() {
-		return Flux
-			.<Event, Long>generate(() -> 1L, (id, sink) -> {
-				sink.next(new Event(id, "value" + id));
-				return id + 1;
-			})
-			.delayElements(Duration.ofSeconds(1))
-			.take(10);
+		final Flux<String> es = Flux.generate(sink -> sink.next("value"));
+		Flux<Long> interval = Flux.interval(Duration.ofSeconds(1));
+
+		return Flux.zip(es, interval).map(tu -> new Event(tu.getT2(), tu.getT1())).take(10);
 	}
 
 	@Data @AllArgsConstructor
