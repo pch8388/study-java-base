@@ -1,6 +1,6 @@
 package com.example.studywebflux.monostudy;
 
-import java.util.stream.Stream;
+import java.time.Duration;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,7 +40,8 @@ public class MonoController {
 	@GetMapping(value = "/events", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
 	Flux<Event> events() {
 		return Flux
-			.fromStream(Stream.generate(() -> new Event(System.currentTimeMillis(), "value")))
+			.<Event>generate(sink -> sink.next(new Event(System.currentTimeMillis(), "value")))
+			.delayElements(Duration.ofSeconds(1))
 			.take(10);
 	}
 

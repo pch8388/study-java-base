@@ -12,8 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 public class StudyWebfluxApplication {
 
 	public static void main(String[] args) {
-		System.setProperty("reactor.ipc.netty.workerCount", "1");
-		System.setProperty("reactor.ipc.netty.pool.maxConnections", "2000");
 		SpringApplication.run(StudyWebfluxApplication.class, args);
 	}
 
