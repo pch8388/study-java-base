@@ -1,5 +1,6 @@
 package base.effective.item3;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 public class SerializableSingleton implements Serializable {
@@ -12,6 +13,7 @@ public class SerializableSingleton implements Serializable {
 		return INSTANCE;
 	}
 
+	@Serial
 	private Object readResolve() {
 		return INSTANCE;
 	}
